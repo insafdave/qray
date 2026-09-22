@@ -260,6 +260,73 @@ function App() {
     }
   };
 
+  const downloadClassicQR = () => {
+    if (!qrCode) return;
+
+    const link = document.createElement("a");
+
+    link.href = qrCode;
+    link.download = "qray.png";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const downloadArtisticQR = async () => {
+    const svg = artisticQrRef.current;
+
+    if (!svg) return;
+
+    try {
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svg);
+
+      const svgBlob = new Blob([svgString], {
+        type: "image/svg+xml;charset=utf-8",
+      });
+
+      const svgUrl = URL.createObjectURL(svgBlob);
+      const image = new Image();
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = 3;
+
+        canvas.width = svg.viewBox.baseVal.width * scale;
+        canvas.height = svg.viewBox.baseVal.height * scale;
+
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+          URL.revokeObjectURL(svgUrl);
+          return;
+        }
+
+        context.imageSmoothingEnabled = false;
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        const link = document.createElement("a");
+        link.download = "qray-artistic.png";
+        link.href = canvas.toDataURL("image/png");
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(svgUrl);
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(svgUrl);
+      };
+
+      image.src = svgUrl;
+    } catch (error) {
+      console.error("Artistic QR download failed:", error);
+    }
+  };
+
   const renderMatrix = () => {
     if (!qrMatrix) return null;
 
@@ -647,16 +714,27 @@ function App() {
         <section className="preview-card">
           {qrCode ? (
             qrMode === "classic" ? (
-              <img
-                src={qrCode}
-                alt="Generated QR code"
-                className="qr-preview"
-              />
+              <div className="qr-download-section">
+                <img
+                  src={qrCode}
+                  alt="Generated QR code"
+                  className="qr-preview"
+                />
+
+                <button className="download-btn" onClick={downloadClassicQR}>
+                  Download PNG
+                </button>
+              </div>
             ) : (
               qrMatrix && (
                 <div className="artistic-preview">
                   <h3>QRay Artistic</h3>
+
                   {renderArtisticQR()}
+
+                  <button className="download-btn" onClick={downloadArtisticQR}>
+                    Download PNG
+                  </button>
                 </div>
               )
             )
