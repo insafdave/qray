@@ -374,7 +374,8 @@ function App() {
           const branchWidth = Math.max(
             2.4,
             (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
-              (0.65 + artisticStrength * 0.35),
+              (0.65 + artisticStrength * 0.35) *
+              (0.92 + ((row * 7 + col * 13) % 9) / 100),
           );
 
           const paths = [];
@@ -388,12 +389,13 @@ function App() {
               <path
                 key={`${index}-right`}
                 d={`
-                M ${current.x} ${current.y}
-                Q ${midX} ${current.y - 1}
+                  M ${current.x} ${current.y}
+                  C ${current.x + 3} ${current.y - 1}
+                  ${next.x - 3} ${next.y - 1}
                   ${next.x} ${next.y}
-              `}
+                `}
                 fill="none"
-                stroke="#3f7652"
+                stroke="#315d43"
                 strokeWidth={branchWidth}
                 strokeLinecap="round"
                 opacity={artisticStrength}
@@ -410,12 +412,13 @@ function App() {
               <path
                 key={`${index}-down`}
                 d={`
-                M ${current.x} ${current.y}
-                Q ${current.x - 1} ${midY}
+                  M ${current.x} ${current.y}
+                  C ${current.x - 1} ${current.y + 3}
+                  ${next.x - 1} ${next.y - 3}
                   ${next.x} ${next.y}
               `}
                 fill="none"
-                stroke="#3f7652"
+                stroke="#315d43"
                 strokeWidth={branchWidth}
                 strokeLinecap="round"
                 opacity={artisticStrength}
@@ -439,14 +442,15 @@ function App() {
           // Dense junctions stay as branch nodes
           if (neighbors >= 3) {
             const radius = 3 + artisticStrength * 0.8;
+            const leafRadius = radius * 1.15;
 
             return (
               <circle
                 key={`node-${index}`}
                 cx={point.x}
                 cy={point.y}
-                r={radius}
-                fill="#3f7652"
+                r={leafRadius}
+                fill="#315d43"
               />
             );
           }
@@ -454,15 +458,24 @@ function App() {
           // End points become small leaf-like shapes
           if (neighbors === 1) {
             return (
-              <ellipse
+              <path
                 key={`leaf-${index}`}
-                cx={point.x}
-                cy={point.y}
-                rx={3 + artisticStrength * 1.5}
-                ry={2 + artisticStrength * 0.8}
+                d={`
+                M ${point.x - 3} ${point.y}
+                Q ${point.x} ${point.y - 3}
+                  ${point.x + 4} ${point.y}
+                Q ${point.x} ${point.y + 2}
+                  ${point.x - 3} ${point.y}
+                Z
+              `}
                 fill="#4f8a5f"
-                transform={`rotate(${(row + col) % 2 === 0 ? -35 : 35} ${point.x} ${point.y})`}
                 opacity={0.35 + artisticStrength * 0.65}
+                transform={`
+                  translate(${point.x} ${point.y})
+                  rotate(${-45 + ((row * 17 + col * 11) % 91)})
+                  scale(${0.85 + ((row * 11 + col * 7) % 16) / 100})
+                  translate(${-point.x} ${-point.y})
+                `}
               />
             );
           }
@@ -474,7 +487,7 @@ function App() {
               cx={point.x}
               cy={point.y}
               r={2.2 + artisticStrength * 0.8}
-              fill="#3f7652"
+              fill="#315d43"
             />
           );
         })}
