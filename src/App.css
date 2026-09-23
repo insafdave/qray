@@ -295,7 +295,7 @@
 
 /* ---------- MOBILE ---------- */
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .navbar {
     width: 88%;
 
@@ -374,6 +374,30 @@
 
   .artistic-qr {
     width: min(100%, 300px);
+  }
+
+  .real-world-section {
+    width: calc(100% - 28px);
+    margin-top: 60px;
+    padding: 50px 0;
+  }
+
+  .real-world-header {
+    margin-bottom: 32px;
+  }
+
+  .real-world-header h2 {
+    font-size: 2.2rem;
+  }
+
+  .real-world-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .real-world-card {
+    min-height: 260px;
+    padding: 24px 18px;
   }
 }
 
@@ -553,7 +577,9 @@
 .mode-option.active {
   background: #fff;
   color: #16372d;
-  box-shadow: 0 4px 12px rgba(48, 82, 59, 0.08);
+  box-shadow:
+    0 4px 12px rgba(48, 82, 59, 0.08),
+    0 1px 2px rgba(48, 82, 59, 0.04);
 }
 
 .mode-option:hover {
@@ -562,22 +588,6 @@
 
 .mode-option:active {
   transform: scale(0.98);
-}
-
-.mode-switch {
-  position: relative;
-}
-
-.mode-option {
-  position: relative;
-  z-index: 2;
-}
-
-.mode-option.active {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow:
-    0 4px 12px rgba(48, 82, 59, 0.08),
-    0 1px 2px rgba(48, 82, 59, 0.04);
 }
 
 .preview-card:has(.qr-preview) {
@@ -627,4 +637,284 @@
 
 .download-btn:active {
   transform: translateY(0);
+}
+
+.real-world-section {
+  width: min(1100px, calc(100% - 40px));
+  margin: 100px auto 0;
+  padding: 80px 0;
+}
+
+.real-world-header {
+  max-width: 680px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.real-world-header h2 {
+  margin: 14px 0 18px;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.real-world-header h2 span {
+  color: #285c43;
+}
+
+.real-world-header p {
+  max-width: 560px;
+  margin: 0 auto;
+  color: #66786f;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.real-world-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.real-world-card {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 22px;
+  border: 1px solid rgba(40, 92, 67, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 14px 40px rgba(48, 82, 59, 0.06);
+  text-align: center;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.real-world-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px rgba(48, 82, 59, 0.1);
+}
+
+.real-world-card h3 {
+  margin: 0 0 8px;
+  color: #16372d;
+  font-size: 1rem;
+}
+
+.real-world-card p {
+  margin: 0;
+  color: #718078;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.phone-mockup {
+  width: 150px;
+  height: 270px;
+  padding: 7px;
+  border: 2px solid #16372d;
+  border-radius: 26px;
+  background: #16372d;
+  box-shadow: 0 18px 40px rgba(48, 82, 59, 0.14);
+}
+
+.phone-screen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.phone-screen::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 42px;
+  height: 5px;
+  border-radius: 10px;
+  background: #16372d;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.phone-screen img {
+  width: 82%;
+  height: auto;
+  margin-top: 12px;
+}
+
+.poster-mockup {
+  width: 150px;
+  height: 210px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f7f7f2;
+  box-shadow: 0 18px 40px rgba(48, 82, 59, 0.12);
+  border: 1px solid rgba(40, 92, 67, 0.08);
+}
+
+.poster-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 10px;
+  text-align: center;
+}
+
+.poster-title {
+  color: #16372d;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.poster-content img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+}
+
+.poster-subtitle {
+  color: #718078;
+  font-size: 0.65rem;
+}
+
+.business-card-mockup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 170px;
+  height: 105px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #16372d;
+  box-shadow: 0 18px 40px rgba(48, 82, 59, 0.16);
+}
+
+.business-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 75px;
+}
+
+.business-card-info strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.business-card-info span {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.48rem;
+  line-height: 1.4;
+}
+
+.business-card-mockup img {
+  width: 52px;
+  height: 52px;
+  padding: 3px;
+  border-radius: 5px;
+  background: #ffffff;
+  object-fit: contain;
+}
+
+.package-mockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 12px;
+  background: #d9c5a0;
+  box-shadow: 0 18px 40px rgba(48, 82, 59, 0.14);
+}
+
+.package-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 105px;
+  height: 105px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.package-label strong {
+  color: #16372d;
+  font-size: 0.8rem;
+}
+
+.package-label img {
+  width: 63px;
+  height: 63px;
+  object-fit: contain;
+}
+
+.package-label span {
+  color: #718078;
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Mobile real-world preview fix */
+@media screen and (max-width: 1200px) {
+  .real-world-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 20px !important;
+  }
+
+  .real-world-card {
+    width: 100% !important;
+    min-height: 260px;
+    box-sizing: border-box;
+  }
+}
+
+.real-world-qr {
+  display: block;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+.business-card-mockup img {
+  width: 63px;
+  height: 63px;
+}
+
+.business-card-mockup .artistic-qr {
+  width: 63px !important;
+  height: 63px !important;
+}
+
+.package-label img {
+  width: 63px;
+  height: 63px;
+}
+
+.package-label > .artistic-qr {
+  width: 65px !important;
+  height: 65px !important;
+  flex-shrink: 0;
 }

@@ -11,32 +11,10 @@ function App() {
   const [qrMatrix, setQrMatrix] = useState(null);
   const [beautyLevel, setBeautyLevel] = useState(35);
   const [qrMode, setQrMode] = useState("classic");
-  const [scannerSupport, setScannerSupport] = useState(null);
-  const [scanResult, setScanResult] = useState(null);
   const [safeBeautyLevel, setSafeBeautyLevel] = useState(null);
 
   const artisticQrRef = useRef(null);
   const safeTestRunRef = useRef(0);
-
-  useEffect(() => {
-    const checkScannerSupport = async () => {
-      if (!("BarcodeDetector" in window)) {
-        setScannerSupport(false);
-        return;
-      }
-
-      try {
-        const formats = await BarcodeDetector.getSupportedFormats();
-
-        setScannerSupport(formats.includes("qr_code"));
-      } catch (error) {
-        console.error("Scanner support check failed:", error);
-        setScannerSupport(false);
-      }
-    };
-
-    checkScannerSupport();
-  }, []);
 
   const scanSvgElement = async (svg) => {
     if (!svg) return null;
@@ -115,34 +93,6 @@ function App() {
       }
     });
   };
-
-  const testQRCode = async () => {
-    if (!artisticQrRef.current) return;
-
-    try {
-      const decodedData = await scanSvgElement(artisticQrRef.current);
-
-      if (decodedData) {
-        setScanResult({
-          success: true,
-          data: decodedData,
-        });
-      } else {
-        setScanResult({
-          success: false,
-          data: null,
-        });
-      }
-    } catch (error) {
-      console.error("Artistic QR scan test failed:", error);
-
-      setScanResult({
-        success: false,
-        data: null,
-      });
-    }
-  };
-
   const testArtisticLevel = async (level) => {
     if (!qrMatrix) return false;
 
@@ -249,12 +199,6 @@ function App() {
 
       setQrCode(qr);
       setQrMatrix(qrModel);
-
-      console.log("QR size:", qrModel.modules.size);
-      console.log(
-        "Reserved modules:",
-        Array.from(qrModel.modules.reservedBit).filter(Boolean).length,
-      );
     } catch (error) {
       setUrlError("Please enter a valid URL.");
     }
@@ -326,37 +270,6 @@ function App() {
       console.error("Artistic QR download failed:", error);
     }
   };
-
-  const renderMatrix = () => {
-    if (!qrMatrix) return null;
-
-    const { size, data, reservedBit } = qrMatrix.modules;
-
-    return (
-      <div
-        className="qr-matrix"
-        style={{
-          gridTemplateColumns: `repeat(${size}, 1fr)`,
-        }}
-      >
-        {Array.from(data).map((cell, index) => {
-          const isReserved = reservedBit[index];
-
-          return (
-            <div
-              key={index}
-              className={[
-                "qr-cell",
-                cell ? "dark" : "",
-                isReserved ? "reserved" : "",
-              ].join(" ")}
-            />
-          );
-        })}
-      </div>
-    );
-  };
-
   const renderArtisticQR = (level = beautyLevel, qrRef = artisticQrRef) => {
     if (!qrMatrix) return null;
 
@@ -459,9 +372,9 @@ function App() {
           const neighbors = getNeighbors(row, col);
 
           const branchWidth = Math.max(
-            1.8,
-            (neighbors >= 3 ? 6 : neighbors === 2 ? 4.8 : 3.8) *
-              artisticStrength,
+            2.4,
+            (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
+              (0.65 + artisticStrength * 0.35),
           );
 
           const paths = [];
@@ -590,20 +503,6 @@ function App() {
       </svg>
     );
   };
-
-  useEffect(() => {
-    if (!qrMatrix || !artisticQrRef.current) {
-      return;
-    }
-
-    setScanResult(null);
-
-    const timer = setTimeout(() => {
-      testQRCode();
-    }, 150);
-
-    return () => clearTimeout(timer);
-  }, [beautyLevel, qrMatrix]);
 
   useEffect(() => {
     safeTestRunRef.current += 1;
@@ -747,6 +646,116 @@ function App() {
           )}
         </section>
       </main>
+
+      <section className="real-world-section" id="real-world">
+        <div className="real-world-header">
+          <span className="eyebrow">Real-world preview</span>
+
+          <h2>
+            See your QR
+            <br />
+            <span>in the real world.</span>
+          </h2>
+
+          <p>
+            Preview how your QR code could look in everyday situations before
+            downloading it.
+          </p>
+        </div>
+
+        <div className="real-world-grid">
+          <div className="real-world-card phone-preview-card">
+            <div className="phone-mockup">
+              <div className="phone-screen">
+                {qrCode &&
+                  (qrMode === "artistic" ? (
+                    renderArtisticQR(beautyLevel, null)
+                  ) : (
+                    <img
+                      src={qrCode}
+                      alt="QR phone preview"
+                      className="real-world-qr"
+                    />
+                  ))}
+              </div>
+            </div>
+
+            <h3>Phone</h3>
+            <p>See your QR on a phone screen.</p>
+          </div>
+
+          <div className="real-world-card poster-preview-card">
+            <div className="poster-mockup">
+              <div className="poster-content">
+                <span className="poster-title">SCAN ME</span>
+
+                {qrCode &&
+                  (qrMode === "artistic" ? (
+                    renderArtisticQR(beautyLevel, null)
+                  ) : (
+                    <img
+                      src={qrCode}
+                      alt="QR poster preview"
+                      className="real-world-qr"
+                    />
+                  ))}
+
+                <span className="poster-subtitle">Discover more</span>
+              </div>
+            </div>
+
+            <h3>Poster</h3>
+            <p>See your QR on a poster.</p>
+          </div>
+
+          <div className="real-world-card business-card-preview">
+            <div className="business-card-mockup">
+              <div className="business-card-info">
+                <strong>QRay</strong>
+                <span>Beautiful digital experiences</span>
+              </div>
+
+              {qrCode &&
+                (qrMode === "artistic" ? (
+                  renderArtisticQR(beautyLevel, null)
+                ) : (
+                  <img
+                    src={qrCode}
+                    alt="QR business card preview"
+                    className="real-world-qr"
+                  />
+                ))}
+            </div>
+
+            <h3>Business Card</h3>
+            <p>See your QR on a business card.</p>
+          </div>
+
+          <div className="real-world-card package-preview-card">
+            <div className="package-mockup">
+              <div className="package-label">
+                <strong>QRay</strong>
+
+                {qrCode &&
+                  (qrMode === "artistic" ? (
+                    renderArtisticQR(beautyLevel, null)
+                  ) : (
+                    <img
+                      src={qrCode}
+                      alt="QR package preview"
+                      className="real-world-qr"
+                    />
+                  ))}
+
+                <span>SCAN TO DISCOVER</span>
+              </div>
+            </div>
+
+            <h3>Package</h3>
+            <p>See your QR on packaging.</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
