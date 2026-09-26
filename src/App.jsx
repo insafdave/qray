@@ -11,6 +11,7 @@ function App() {
   const [qrMatrix, setQrMatrix] = useState(null);
   const [beautyLevel, setBeautyLevel] = useState(35);
   const [qrMode, setQrMode] = useState("classic");
+  const [artisticStyle, setArtisticStyle] = useState("tree");
   const [safeBeautyLevel, setSafeBeautyLevel] = useState(null);
 
   const artisticQrRef = useRef(null);
@@ -276,6 +277,7 @@ function App() {
     const { size, data, reservedBit } = qrMatrix.modules;
 
     const artisticStrength = level / 100;
+    const isBloom = artisticStyle === "bloom";
 
     const moduleSize = 10;
     const padding = 40;
@@ -360,107 +362,281 @@ function App() {
           fill="#ffffff"
         />
 
-        {/* Organic branches */}
-        {Array.from(data).map((cell, index) => {
-          if (!cell || reservedBit[index]) return null;
+        {isBloom && (
+          <>
+            {/* Bloom flowers */}
+            <defs>
+              <radialGradient id="bloomPetalGradient">
+                <stop offset="0%" stopColor="#8fbd9a" />
+                <stop offset="65%" stopColor="#5f9b70" />
+                <stop offset="100%" stopColor="#3f7652" />
+              </radialGradient>
 
-          const row = Math.floor(index / size);
-          const col = index % size;
+              <radialGradient id="bloomCenterGradient">
+                <stop offset="0%" stopColor="#6fa47c" />
+                <stop offset="100%" stopColor="#315d43" />
+              </radialGradient>
+            </defs>
 
-          const current = getPoint(row, col);
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
 
-          const neighbors = getNeighbors(row, col);
+              const row = Math.floor(index / size);
+              const col = index % size;
 
-          const branchWidth = Math.max(
-            2.4,
-            (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
-              (0.65 + artisticStrength * 0.35) *
-              (0.92 + ((row * 7 + col * 13) % 9) / 100),
-          );
+              const point = getPoint(row, col);
+              const neighbors = getNeighbors(row, col);
 
-          const paths = [];
+              if (neighbors === 0) {
+                return (
+                  <circle
+                    key={`bloom-dot-${index}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r={1.5 + artisticStrength * 0.6}
+                    fill="#5f9b70"
+                    opacity={0.55 + artisticStrength * 0.3}
+                  />
+                );
+              }
 
-          // Right branch
-          if (isArtisticDark(row, col + 1)) {
-            const next = getPoint(row, col + 1);
-            const midX = (current.x + next.x) / 2;
+              const petalCount = 5;
 
-            paths.push(
-              <path
-                key={`${index}-right`}
-                d={`
+              const petalLength = 4.8 + artisticStrength * 2.2;
+
+              const petalWidth = 2.1 + artisticStrength * 0.9;
+
+              const flowerScale = 0.82 + artisticStrength * 0.18;
+
+              const rotation = ((row * 19 + col * 13) % 72) - 36;
+
+              return (
+                <g
+                  key={`bloom-${index}`}
+                  transform={`
+            translate(${point.x} ${point.y})
+            rotate(${rotation})
+            scale(${flowerScale})
+          `}
+                >
+                  {/* Flower petals */}
+                  {Array.from({ length: petalCount }).map((_, petalIndex) => {
+                    const angle = (360 / petalCount) * petalIndex;
+
+                    return (
+                      <path
+                        key={`petal-${petalIndex}`}
+                        d={`
+                    M 0 0
+                    C
+                      ${-petalWidth} ${-petalLength * 0.35}
+                      ${-petalWidth * 0.9} ${-petalLength * 0.78}
+                      0 ${-petalLength}
+                    C
+                      ${petalWidth * 0.9} ${-petalLength * 0.78}
+                      ${petalWidth} ${-petalLength * 0.35}
+                      0 0
+                    Z
+                  `}
+                        fill="url(#bloomPetalGradient)"
+                        opacity={0.72 + artisticStrength * 0.25}
+                        transform={`rotate(${angle})`}
+                      />
+                    );
+                  })}
+
+                  {/* Flower center */}
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={2.2 + artisticStrength * 0.8}
+                    fill="url(#bloomCenterGradient)"
+                  />
+
+                  {/* Center detail */}
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={0.75 + artisticStrength * 0.35}
+                    fill="#b5d1ba"
+                    opacity="0.9"
+                  />
+                </g>
+              );
+            })}
+          </>
+        )}
+
+        {artisticStyle === "leaf" && (
+          <>
+            {/* Leaf pattern */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
+
+              const row = Math.floor(index / size);
+              const col = index % size;
+
+              const point = getPoint(row, col);
+              const neighbors = getNeighbors(row, col);
+
+              if (neighbors === 0) return null;
+
+              const leafLength = 5.8 + artisticStrength * 3.2;
+
+              const leafWidth = 2.6 + artisticStrength * 1.4;
+
+              const rotation = ((row * 17 + col * 23) % 120) - 60;
+
+              const scale = 0.8 + ((row * 11 + col * 7) % 21) / 100;
+
+              return (
+                <g
+                  key={`leaf-${index}`}
+                  transform={`
+            translate(${point.x} ${point.y})
+            rotate(${rotation})
+            scale(${scale})
+          `}
+                >
+                  <path
+                    d={`
+              M 0 0
+              C
+                ${-leafWidth} ${-leafLength * 0.35}
+                ${-leafWidth * 0.9} ${-leafLength * 0.78}
+                0 ${-leafLength}
+              C
+                ${leafWidth * 0.9} ${-leafLength * 0.78}
+                ${leafWidth} ${-leafLength * 0.35}
+                0 0
+              Z
+            `}
+                    fill="#4f8a5f"
+                    opacity={0.65 + artisticStrength * 0.3}
+                  />
+
+                  <path
+                    d={`
+              M 0 -0.5
+              C
+                0 ${-leafLength * 0.3}
+                0 ${-leafLength * 0.65}
+                0 ${-leafLength * 0.9}
+            `}
+                    fill="none"
+                    stroke="#315d43"
+                    strokeWidth={0.7 + artisticStrength * 0.35}
+                    strokeLinecap="round"
+                    opacity={0.65 + artisticStrength * 0.25}
+                  />
+                </g>
+              );
+            })}
+          </>
+        )}
+        {!isBloom && artisticStyle !== "leaf" && (
+          <>
+            {/* Organic branches */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
+
+              const row = Math.floor(index / size);
+              const col = index % size;
+
+              const current = getPoint(row, col);
+
+              const neighbors = getNeighbors(row, col);
+
+              const branchWidth = Math.max(
+                2.4,
+                (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
+                  (0.65 + artisticStrength * 0.35) *
+                  (0.92 + ((row * 7 + col * 13) % 9) / 100),
+              );
+
+              const paths = [];
+
+              // Right branch
+              if (isArtisticDark(row, col + 1)) {
+                const next = getPoint(row, col + 1);
+                const midX = (current.x + next.x) / 2;
+
+                paths.push(
+                  <path
+                    key={`${index}-right`}
+                    d={`
                   M ${current.x} ${current.y}
                   C ${current.x + 3} ${current.y - 1}
                   ${next.x - 3} ${next.y - 1}
                   ${next.x} ${next.y}
                 `}
-                fill="none"
-                stroke="#315d43"
-                strokeWidth={branchWidth}
-                strokeLinecap="round"
-                opacity={artisticStrength}
-              />,
-            );
-          }
+                    fill="none"
+                    stroke="#315d43"
+                    strokeWidth={branchWidth}
+                    strokeLinecap="round"
+                    opacity={artisticStrength}
+                  />,
+                );
+              }
 
-          // Down branch
-          if (isArtisticDark(row + 1, col)) {
-            const next = getPoint(row + 1, col);
-            const midY = (current.y + next.y) / 2;
+              // Down branch
+              if (isArtisticDark(row + 1, col)) {
+                const next = getPoint(row + 1, col);
+                const midY = (current.y + next.y) / 2;
 
-            paths.push(
-              <path
-                key={`${index}-down`}
-                d={`
+                paths.push(
+                  <path
+                    key={`${index}-down`}
+                    d={`
                   M ${current.x} ${current.y}
                   C ${current.x - 1} ${current.y + 3}
                   ${next.x - 1} ${next.y - 3}
                   ${next.x} ${next.y}
               `}
-                fill="none"
-                stroke="#315d43"
-                strokeWidth={branchWidth}
-                strokeLinecap="round"
-                opacity={artisticStrength}
-              />,
-            );
-          }
+                    fill="none"
+                    stroke="#315d43"
+                    strokeWidth={branchWidth}
+                    strokeLinecap="round"
+                    opacity={artisticStrength}
+                  />,
+                );
+              }
 
-          return paths;
-        })}
+              return paths;
+            })}
 
-        {/* Organic leaf nodes */}
-        {Array.from(data).map((cell, index) => {
-          if (!cell || reservedBit[index]) return null;
+            {/* Organic leaf nodes */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
 
-          const row = Math.floor(index / size);
-          const col = index % size;
+              const row = Math.floor(index / size);
+              const col = index % size;
 
-          const point = getPoint(row, col);
-          const neighbors = getNeighbors(row, col);
+              const point = getPoint(row, col);
+              const neighbors = getNeighbors(row, col);
 
-          // Dense junctions stay as branch nodes
-          if (neighbors >= 3) {
-            const radius = 3 + artisticStrength * 0.8;
-            const leafRadius = radius * 1.15;
+              // Dense junctions stay as branch nodes
+              if (neighbors >= 3) {
+                const radius = 3 + artisticStrength * 0.8;
+                const leafRadius = radius * 1.15;
 
-            return (
-              <circle
-                key={`node-${index}`}
-                cx={point.x}
-                cy={point.y}
-                r={leafRadius}
-                fill="#315d43"
-              />
-            );
-          }
+                return (
+                  <circle
+                    key={`node-${index}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r={leafRadius}
+                    fill="#315d43"
+                  />
+                );
+              }
 
-          // End points become small leaf-like shapes
-          if (neighbors === 1) {
-            return (
-              <path
-                key={`leaf-${index}`}
-                d={`
+              // End points become small leaf-like shapes
+              if (neighbors === 1) {
+                return (
+                  <path
+                    key={`leaf-${index}`}
+                    d={`
                 M ${point.x - 3} ${point.y}
                 Q ${point.x} ${point.y - 3}
                   ${point.x + 4} ${point.y}
@@ -468,26 +644,48 @@ function App() {
                   ${point.x - 3} ${point.y}
                 Z
               `}
-                fill="#4f8a5f"
-                opacity={0.35 + artisticStrength * 0.65}
-                transform={`
+                    fill="#4f8a5f"
+                    opacity={0.35 + artisticStrength * 0.65}
+                    transform={`
                   translate(${point.x} ${point.y})
                   rotate(${-45 + ((row * 17 + col * 11) % 91)})
                   scale(${0.85 + ((row * 11 + col * 7) % 16) / 100})
                   translate(${-point.x} ${-point.y})
                 `}
-              />
-            );
-          }
+                  />
+                );
+              }
 
-          // Normal branch module
+              // Normal branch module
+              return (
+                <circle
+                  key={`node-${index}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r={2.2 + artisticStrength * 0.8}
+                  fill="#315d43"
+                />
+              );
+            })}
+          </>
+        )}
+
+        {/* Scan-safe artistic core */}
+        {Array.from(data).map((cell, index) => {
+          if (!cell || reservedBit[index]) return null;
+
+          const row = Math.floor(index / size);
+          const col = index % size;
+
+          const point = getPoint(row, col);
+
           return (
             <circle
-              key={`node-${index}`}
+              key={`scan-core-${index}`}
               cx={point.x}
               cy={point.y}
-              r={2.2 + artisticStrength * 0.8}
-              fill="#315d43"
+              r={2.6}
+              fill="#16372d"
             />
           );
         })}
@@ -525,8 +723,13 @@ function App() {
       return;
     }
 
+    if (artisticStyle === "leaf") {
+      setSafeBeautyLevel(100);
+      return;
+    }
+
     findSafeBeautyLevel();
-  }, [qrMatrix, qrMode]);
+  }, [qrMatrix, qrMode, artisticStyle]);
 
   return (
     <div className="app">
@@ -593,6 +796,37 @@ function App() {
               Artistic
             </button>
           </div>
+
+          {qrMode === "artistic" && (
+            <div className="style-switch">
+              <button
+                className={`style-option ${
+                  artisticStyle === "tree" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("tree")}
+              >
+                Tree
+              </button>
+
+              <button
+                className={`style-option ${
+                  artisticStyle === "bloom" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("bloom")}
+              >
+                Bloom
+              </button>
+
+              <button
+                className={`style-option ${
+                  artisticStyle === "leaf" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("leaf")}
+              >
+                Leaf
+              </button>
+            </div>
+          )}
 
           {qrMode === "artistic" && (
             <div className="beauty-control">
