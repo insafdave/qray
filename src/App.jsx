@@ -170,6 +170,80 @@ function App() {
     }
   };
 
+  const applySmartBeauty = () => {
+    const smartLevel = getSmartBeautyLevel();
+    const smartStyle = getSmartStyle();
+
+    setBeautyLevel(smartLevel);
+    setArtisticStyle(smartStyle);
+  };
+
+  const getQrProfile = () => {
+    let darkModules = 0;
+    let totalModules = 0;
+
+    Array.from(qrMatrix.modules.data).forEach((cell, index) => {
+      if (qrMatrix.modules.reservedBit[index]) return;
+
+      totalModules += 1;
+
+      if (cell) {
+        darkModules += 1;
+      }
+    });
+
+    const density = totalModules > 0 ? darkModules / totalModules : 0;
+
+    return {
+      size: qrMatrix.modules.size,
+      density,
+      darkModules,
+      totalModules,
+    };
+  };
+
+  const getQrComplexity = () => {
+    const profile = getQrProfile();
+
+    if (profile.size >= 41 || profile.density >= 0.55) {
+      return "high";
+    }
+
+    if (profile.size >= 29 || profile.density >= 0.45) {
+      return "medium";
+    }
+
+    return "low";
+  };
+
+  const getSmartBeautyLevel = () => {
+    const complexity = getQrComplexity();
+
+    if (complexity === "high") {
+      return 35;
+    }
+
+    if (complexity === "medium") {
+      return 55;
+    }
+
+    return 75;
+  };
+
+  const getSmartStyle = () => {
+    const complexity = getQrComplexity();
+
+    if (complexity === "high") {
+      return "leaf";
+    }
+
+    if (complexity === "medium") {
+      return "flow";
+    }
+
+    return "bloom";
+  };
+
   const generateQRCode = async () => {
     const value = url.trim();
 
@@ -814,114 +888,109 @@ function App() {
           </>
         )}
 
-        {!isBloom &&
-          artisticStyle !== "leaf" &&
-          !isFlow &&
-          artisticStyle !== "spark" &&
-          artisticStyle !== "crystal" &&
-          artisticStyle !== "galaxy" && (
-            <>
-              {/* Organic branches */}
-              {Array.from(data).map((cell, index) => {
-                if (!cell || reservedBit[index]) return null;
+        {artisticStyle === "tree" && (
+          <>
+            {/* Organic branches */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
 
-                const row = Math.floor(index / size);
-                const col = index % size;
+              const row = Math.floor(index / size);
+              const col = index % size;
 
-                const current = getPoint(row, col);
+              const current = getPoint(row, col);
 
-                const neighbors = getNeighbors(row, col);
+              const neighbors = getNeighbors(row, col);
 
-                const branchWidth = Math.max(
-                  2.4,
-                  (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
-                    (0.65 + artisticStrength * 0.35) *
-                    (0.92 + ((row * 7 + col * 13) % 9) / 100),
-                );
+              const branchWidth = Math.max(
+                2.4,
+                (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
+                  (0.65 + artisticStrength * 0.35) *
+                  (0.92 + ((row * 7 + col * 13) % 9) / 100),
+              );
 
-                const paths = [];
+              const paths = [];
 
-                // Right branch
-                if (isArtisticDark(row, col + 1)) {
-                  const next = getPoint(row, col + 1);
-                  const midX = (current.x + next.x) / 2;
+              // Right branch
+              if (isArtisticDark(row, col + 1)) {
+                const next = getPoint(row, col + 1);
+                const midX = (current.x + next.x) / 2;
 
-                  paths.push(
-                    <path
-                      key={`${index}-right`}
-                      d={`
+                paths.push(
+                  <path
+                    key={`${index}-right`}
+                    d={`
                   M ${current.x} ${current.y}
                   C ${current.x + 3} ${current.y - 1}
                   ${next.x - 3} ${next.y - 1}
                   ${next.x} ${next.y}
                 `}
-                      fill="none"
-                      stroke="#315d43"
-                      strokeWidth={branchWidth}
-                      strokeLinecap="round"
-                      opacity={artisticStrength}
-                    />,
-                  );
-                }
+                    fill="none"
+                    stroke="#315d43"
+                    strokeWidth={branchWidth}
+                    strokeLinecap="round"
+                    opacity={artisticStrength}
+                  />,
+                );
+              }
 
-                // Down branch
-                if (isArtisticDark(row + 1, col)) {
-                  const next = getPoint(row + 1, col);
-                  const midY = (current.y + next.y) / 2;
+              // Down branch
+              if (isArtisticDark(row + 1, col)) {
+                const next = getPoint(row + 1, col);
+                const midY = (current.y + next.y) / 2;
 
-                  paths.push(
-                    <path
-                      key={`${index}-down`}
-                      d={`
+                paths.push(
+                  <path
+                    key={`${index}-down`}
+                    d={`
                   M ${current.x} ${current.y}
                   C ${current.x - 1} ${current.y + 3}
                   ${next.x - 1} ${next.y - 3}
                   ${next.x} ${next.y}
               `}
-                      fill="none"
-                      stroke="#315d43"
-                      strokeWidth={branchWidth}
-                      strokeLinecap="round"
-                      opacity={artisticStrength}
-                    />,
-                  );
-                }
+                    fill="none"
+                    stroke="#315d43"
+                    strokeWidth={branchWidth}
+                    strokeLinecap="round"
+                    opacity={artisticStrength}
+                  />,
+                );
+              }
 
-                return paths;
-              })}
+              return paths;
+            })}
 
-              {/* Organic leaf nodes */}
-              {Array.from(data).map((cell, index) => {
-                if (!cell || reservedBit[index]) return null;
+            {/* Organic leaf nodes */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
 
-                const row = Math.floor(index / size);
-                const col = index % size;
+              const row = Math.floor(index / size);
+              const col = index % size;
 
-                const point = getPoint(row, col);
-                const neighbors = getNeighbors(row, col);
+              const point = getPoint(row, col);
+              const neighbors = getNeighbors(row, col);
 
-                // Dense junctions stay as branch nodes
-                if (neighbors >= 3) {
-                  const radius = 3 + artisticStrength * 0.8;
-                  const leafRadius = radius * 1.15;
+              // Dense junctions stay as branch nodes
+              if (neighbors >= 3) {
+                const radius = 3 + artisticStrength * 0.8;
+                const leafRadius = radius * 1.15;
 
-                  return (
-                    <circle
-                      key={`node-${index}`}
-                      cx={point.x}
-                      cy={point.y}
-                      r={leafRadius}
-                      fill="#315d43"
-                    />
-                  );
-                }
+                return (
+                  <circle
+                    key={`node-${index}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r={leafRadius}
+                    fill="#315d43"
+                  />
+                );
+              }
 
-                // End points become small leaf-like shapes
-                if (neighbors === 1) {
-                  return (
-                    <path
-                      key={`leaf-${index}`}
-                      d={`
+              // End points become small leaf-like shapes
+              if (neighbors === 1) {
+                return (
+                  <path
+                    key={`leaf-${index}`}
+                    d={`
                 M ${point.x - 3} ${point.y}
                 Q ${point.x} ${point.y - 3}
                   ${point.x + 4} ${point.y}
@@ -929,31 +998,31 @@ function App() {
                   ${point.x - 3} ${point.y}
                 Z
               `}
-                      fill="#4f8a5f"
-                      opacity={0.35 + artisticStrength * 0.65}
-                      transform={`
+                    fill="#4f8a5f"
+                    opacity={0.35 + artisticStrength * 0.65}
+                    transform={`
                   translate(${point.x} ${point.y})
                   rotate(${-45 + ((row * 17 + col * 11) % 91)})
                   scale(${0.85 + ((row * 11 + col * 7) % 16) / 100})
                   translate(${-point.x} ${-point.y})
                 `}
-                    />
-                  );
-                }
-
-                // Normal branch module
-                return (
-                  <circle
-                    key={`node-${index}`}
-                    cx={point.x}
-                    cy={point.y}
-                    r={2.2 + artisticStrength * 0.8}
-                    fill="#315d43"
                   />
                 );
-              })}
-            </>
-          )}
+              }
+
+              // Normal branch module
+              return (
+                <circle
+                  key={`node-${index}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r={2.2 + artisticStrength * 0.8}
+                  fill="#315d43"
+                />
+              );
+            })}
+          </>
+        )}
 
         {/* Scan-safe artistic core */}
         {Array.from(data).map((cell, index) => {
@@ -1147,6 +1216,16 @@ function App() {
                 Galaxy
               </button>
             </div>
+          )}
+
+          {qrMode === "artistic" && (
+            <button
+              type="button"
+              className="smart-beauty-button"
+              onClick={applySmartBeauty}
+            >
+              ✨ Make It Beautiful
+            </button>
           )}
 
           {qrMode === "artistic" && (
