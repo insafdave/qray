@@ -661,6 +661,72 @@ function App() {
           </>
         )}
 
+        {artisticStyle === "crystal" && (
+          <>
+            {/* Crystal pattern */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
+
+              const row = Math.floor(index / size);
+              const col = index % size;
+
+              const point = getPoint(row, col);
+              const crystalSize = 5.5 + artisticStrength * 3.5;
+
+              const rotation = ((row * 23 + col * 31) % 60) - 30;
+
+              const opacity = 0.5 + artisticStrength * 0.25;
+
+              return (
+                <g
+                  key={`crystal-${index}`}
+                  transform={`
+                  translate(${point.x} ${point.y})
+                  rotate(${rotation})
+                  scale(${0.72 + artisticStrength * 0.18})
+                `}
+                >
+                  <path
+                    d={`
+                      M 0 ${-crystalSize}
+                      L ${crystalSize * 0.72} ${-crystalSize * 0.35}
+                      L ${crystalSize * 0.58} ${crystalSize * 0.55}
+                      L 0 ${crystalSize}
+                      L ${-crystalSize * 0.58} ${crystalSize * 0.55}
+                      L ${-crystalSize * 0.72} ${-crystalSize * 0.35}
+                      Z
+                    `}
+                    fill="#5f9b70"
+                    opacity={opacity}
+                  />
+
+                  <path
+                    d={`
+              M 0 ${-crystalSize}
+              L 0 ${crystalSize}
+              L ${crystalSize * 0.7} ${-crystalSize * 0.25}
+              Z
+            `}
+                    fill="#b5d1ba"
+                    opacity={0.7 + artisticStrength * 0.2}
+                  />
+
+                  <path
+                    d={`
+              M 0 ${-crystalSize}
+              L ${-crystalSize * 0.7} ${-crystalSize * 0.25}
+              L 0 ${crystalSize}
+              Z
+            `}
+                    fill="#3f7652"
+                    opacity={0.45 + artisticStrength * 0.25}
+                  />
+                </g>
+              );
+            })}
+          </>
+        )}
+
         {!isBloom && artisticStyle !== "leaf" && !isFlow && (
           <>
             {/* Organic branches */}
@@ -969,6 +1035,15 @@ function App() {
                 onClick={() => setArtisticStyle("spark")}
               >
                 Spark
+              </button>
+
+              <button
+                className={`style-option ${
+                  artisticStyle === "crystal" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("crystal")}
+              >
+                Crystal
               </button>
             </div>
           )}
