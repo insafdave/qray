@@ -278,6 +278,7 @@ function App() {
 
     const artisticStrength = level / 100;
     const isBloom = artisticStyle === "bloom";
+    const isFlow = artisticStyle === "flow";
 
     const moduleSize = 10;
     const padding = 40;
@@ -534,7 +535,75 @@ function App() {
             })}
           </>
         )}
-        {!isBloom && artisticStyle !== "leaf" && (
+
+        {isFlow && (
+          <>
+            {/* Flow / Wave pattern */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
+
+              const row = Math.floor(index / size);
+              const col = index % size;
+
+              const point = getPoint(row, col);
+              const strength = artisticStrength;
+
+              const wave = Math.sin(row * 0.55 + col * 0.28) * strength * 3.5;
+
+              const paths = [];
+
+              // Horizontal flow
+              if (isArtisticDark(row, col + 1)) {
+                const next = getPoint(row, col + 1);
+
+                paths.push(
+                  <path
+                    key={`flow-h-${index}`}
+                    d={`
+                      M ${point.x} ${point.y + wave}
+                      C
+                      ${point.x + 4} ${point.y + wave - 5}
+                      ${next.x - 4} ${next.y + wave + 5}
+                      ${next.x} ${next.y + wave}
+                    `}
+                    fill="none"
+                    stroke="#4f8a5f"
+                    strokeWidth={3.4 + strength * 1.4}
+                    strokeLinecap="round"
+                    opacity={0.65 + strength * 0.25}
+                  />,
+                );
+              }
+
+              // Vertical flow
+              if (isArtisticDark(row + 1, col)) {
+                const next = getPoint(row + 1, col);
+
+                paths.push(
+                  <path
+                    key={`flow-v-${index}`}
+                    d={`
+                      M ${point.x + wave} ${point.y}
+                      C
+                      ${point.x + wave + 5} ${point.y + 4}
+                      ${next.x + wave - 5} ${next.y - 4}
+                      ${next.x + wave} ${next.y}
+                    `}
+                    fill="none"
+                    stroke="#315d43"
+                    strokeWidth={3.4 + strength * 1.4}
+                    strokeLinecap="round"
+                    opacity={0.65 + strength * 0.25}
+                  />,
+                );
+              }
+
+              return paths;
+            })}
+          </>
+        )}
+
+        {!isBloom && artisticStyle !== "leaf" && !isFlow && (
           <>
             {/* Organic branches */}
             {Array.from(data).map((cell, index) => {
@@ -824,6 +893,15 @@ function App() {
                 onClick={() => setArtisticStyle("leaf")}
               >
                 Leaf
+              </button>
+
+              <button
+                className={`style-option ${
+                  artisticStyle === "flow" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("flow")}
+              >
+                Flow
               </button>
             </div>
           )}
