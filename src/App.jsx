@@ -727,78 +727,9 @@ function App() {
           </>
         )}
 
-        {!isBloom && artisticStyle !== "leaf" && !isFlow && (
+        {artisticStyle === "galaxy" && (
           <>
-            {/* Organic branches */}
-            {Array.from(data).map((cell, index) => {
-              if (!cell || reservedBit[index]) return null;
-
-              const row = Math.floor(index / size);
-              const col = index % size;
-
-              const current = getPoint(row, col);
-
-              const neighbors = getNeighbors(row, col);
-
-              const branchWidth = Math.max(
-                2.4,
-                (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
-                  (0.65 + artisticStrength * 0.35) *
-                  (0.92 + ((row * 7 + col * 13) % 9) / 100),
-              );
-
-              const paths = [];
-
-              // Right branch
-              if (isArtisticDark(row, col + 1)) {
-                const next = getPoint(row, col + 1);
-                const midX = (current.x + next.x) / 2;
-
-                paths.push(
-                  <path
-                    key={`${index}-right`}
-                    d={`
-                  M ${current.x} ${current.y}
-                  C ${current.x + 3} ${current.y - 1}
-                  ${next.x - 3} ${next.y - 1}
-                  ${next.x} ${next.y}
-                `}
-                    fill="none"
-                    stroke="#315d43"
-                    strokeWidth={branchWidth}
-                    strokeLinecap="round"
-                    opacity={artisticStrength}
-                  />,
-                );
-              }
-
-              // Down branch
-              if (isArtisticDark(row + 1, col)) {
-                const next = getPoint(row + 1, col);
-                const midY = (current.y + next.y) / 2;
-
-                paths.push(
-                  <path
-                    key={`${index}-down`}
-                    d={`
-                  M ${current.x} ${current.y}
-                  C ${current.x - 1} ${current.y + 3}
-                  ${next.x - 1} ${next.y - 3}
-                  ${next.x} ${next.y}
-              `}
-                    fill="none"
-                    stroke="#315d43"
-                    strokeWidth={branchWidth}
-                    strokeLinecap="round"
-                    opacity={artisticStrength}
-                  />,
-                );
-              }
-
-              return paths;
-            })}
-
-            {/* Organic leaf nodes */}
+            {/* Galaxy pattern */}
             {Array.from(data).map((cell, index) => {
               if (!cell || reservedBit[index]) return null;
 
@@ -806,30 +737,191 @@ function App() {
               const col = index % size;
 
               const point = getPoint(row, col);
-              const neighbors = getNeighbors(row, col);
 
-              // Dense junctions stay as branch nodes
-              if (neighbors >= 3) {
-                const radius = 3 + artisticStrength * 0.8;
-                const leafRadius = radius * 1.15;
+              const variation = (row * 17 + col * 29) % 100;
 
-                return (
-                  <circle
-                    key={`node-${index}`}
-                    cx={point.x}
-                    cy={point.y}
-                    r={leafRadius}
-                    fill="#315d43"
-                  />
-                );
-              }
+              const starSize =
+                1.2 + artisticStrength * 1.4 + (variation / 100) * 0.9;
 
-              // End points become small leaf-like shapes
-              if (neighbors === 1) {
-                return (
+              const starOpacity =
+                0.65 + artisticStrength * 0.3 + (variation / 100) * 0.15;
+
+              const orbitSize =
+                starSize * (1.8 + ((row * 11 + col * 23) % 40) / 100);
+
+              const orbitRotation = (row * 37 + col * 53) % 360;
+
+              return (
+                <g
+                  key={`galaxy-${index}`}
+                  transform={`
+            translate(${point.x} ${point.y})
+            rotate(${orbitRotation})
+          `}
+                >
+                  {/* Soft galaxy particle */}
+
                   <path
-                    key={`leaf-${index}`}
                     d={`
+                      M 0 ${-starSize * 1.25}
+                      L ${starSize * 0.35} ${-starSize * 0.35}
+                      L ${starSize * 1.25} 0
+                      L ${starSize * 0.35} ${starSize * 0.35}
+                      L 0 ${starSize * 1.25}
+                      L ${-starSize * 0.35} ${starSize * 0.35}
+                      L ${-starSize * 1.25} 0
+                      L ${-starSize * 0.35} ${-starSize * 0.35}
+                      Z
+                    `}
+                    fill="#6fa47c"
+                    opacity={starOpacity}
+                  />
+
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={starSize * 1.5}
+                    fill="#8fbd9a"
+                    opacity={0.08 + artisticStrength * 0.12}
+                  />
+
+                  {/* Small star flare */}
+                  <path
+                    d={`
+              M 0 ${-orbitSize}
+              L 0 ${orbitSize}
+
+              M ${-orbitSize} 0
+              L ${orbitSize} 0
+            `}
+                    stroke="#8fbd9a"
+                    strokeWidth={0.45 + artisticStrength * 0.35}
+                    strokeLinecap="round"
+                    opacity={0.12 + artisticStrength * 0.25}
+                  />
+
+                  {/* Tiny companion star */}
+                  <circle
+                    cx={orbitSize * 0.85}
+                    cy={orbitSize * 0.35}
+                    r={0.65 + artisticStrength * 0.45}
+                    fill="#b5d1ba"
+                    opacity={0.35 + artisticStrength * 0.35}
+                  />
+                </g>
+              );
+            })}
+          </>
+        )}
+
+        {!isBloom &&
+          artisticStyle !== "leaf" &&
+          !isFlow &&
+          artisticStyle !== "spark" &&
+          artisticStyle !== "crystal" &&
+          artisticStyle !== "galaxy" && (
+            <>
+              {/* Organic branches */}
+              {Array.from(data).map((cell, index) => {
+                if (!cell || reservedBit[index]) return null;
+
+                const row = Math.floor(index / size);
+                const col = index % size;
+
+                const current = getPoint(row, col);
+
+                const neighbors = getNeighbors(row, col);
+
+                const branchWidth = Math.max(
+                  2.4,
+                  (neighbors >= 3 ? 6.5 : neighbors === 2 ? 5.2 : 4.2) *
+                    (0.65 + artisticStrength * 0.35) *
+                    (0.92 + ((row * 7 + col * 13) % 9) / 100),
+                );
+
+                const paths = [];
+
+                // Right branch
+                if (isArtisticDark(row, col + 1)) {
+                  const next = getPoint(row, col + 1);
+                  const midX = (current.x + next.x) / 2;
+
+                  paths.push(
+                    <path
+                      key={`${index}-right`}
+                      d={`
+                  M ${current.x} ${current.y}
+                  C ${current.x + 3} ${current.y - 1}
+                  ${next.x - 3} ${next.y - 1}
+                  ${next.x} ${next.y}
+                `}
+                      fill="none"
+                      stroke="#315d43"
+                      strokeWidth={branchWidth}
+                      strokeLinecap="round"
+                      opacity={artisticStrength}
+                    />,
+                  );
+                }
+
+                // Down branch
+                if (isArtisticDark(row + 1, col)) {
+                  const next = getPoint(row + 1, col);
+                  const midY = (current.y + next.y) / 2;
+
+                  paths.push(
+                    <path
+                      key={`${index}-down`}
+                      d={`
+                  M ${current.x} ${current.y}
+                  C ${current.x - 1} ${current.y + 3}
+                  ${next.x - 1} ${next.y - 3}
+                  ${next.x} ${next.y}
+              `}
+                      fill="none"
+                      stroke="#315d43"
+                      strokeWidth={branchWidth}
+                      strokeLinecap="round"
+                      opacity={artisticStrength}
+                    />,
+                  );
+                }
+
+                return paths;
+              })}
+
+              {/* Organic leaf nodes */}
+              {Array.from(data).map((cell, index) => {
+                if (!cell || reservedBit[index]) return null;
+
+                const row = Math.floor(index / size);
+                const col = index % size;
+
+                const point = getPoint(row, col);
+                const neighbors = getNeighbors(row, col);
+
+                // Dense junctions stay as branch nodes
+                if (neighbors >= 3) {
+                  const radius = 3 + artisticStrength * 0.8;
+                  const leafRadius = radius * 1.15;
+
+                  return (
+                    <circle
+                      key={`node-${index}`}
+                      cx={point.x}
+                      cy={point.y}
+                      r={leafRadius}
+                      fill="#315d43"
+                    />
+                  );
+                }
+
+                // End points become small leaf-like shapes
+                if (neighbors === 1) {
+                  return (
+                    <path
+                      key={`leaf-${index}`}
+                      d={`
                 M ${point.x - 3} ${point.y}
                 Q ${point.x} ${point.y - 3}
                   ${point.x + 4} ${point.y}
@@ -837,31 +929,31 @@ function App() {
                   ${point.x - 3} ${point.y}
                 Z
               `}
-                    fill="#4f8a5f"
-                    opacity={0.35 + artisticStrength * 0.65}
-                    transform={`
+                      fill="#4f8a5f"
+                      opacity={0.35 + artisticStrength * 0.65}
+                      transform={`
                   translate(${point.x} ${point.y})
                   rotate(${-45 + ((row * 17 + col * 11) % 91)})
                   scale(${0.85 + ((row * 11 + col * 7) % 16) / 100})
                   translate(${-point.x} ${-point.y})
                 `}
+                    />
+                  );
+                }
+
+                // Normal branch module
+                return (
+                  <circle
+                    key={`node-${index}`}
+                    cx={point.x}
+                    cy={point.y}
+                    r={2.2 + artisticStrength * 0.8}
+                    fill="#315d43"
                   />
                 );
-              }
-
-              // Normal branch module
-              return (
-                <circle
-                  key={`node-${index}`}
-                  cx={point.x}
-                  cy={point.y}
-                  r={2.2 + artisticStrength * 0.8}
-                  fill="#315d43"
-                />
-              );
-            })}
-          </>
-        )}
+              })}
+            </>
+          )}
 
         {/* Scan-safe artistic core */}
         {Array.from(data).map((cell, index) => {
@@ -877,7 +969,7 @@ function App() {
               key={`scan-core-${index}`}
               cx={point.x}
               cy={point.y}
-              r={2.6}
+              r={artisticStyle === "galaxy" ? 0.8 : 2.6}
               fill="#16372d"
             />
           );
@@ -1044,6 +1136,15 @@ function App() {
                 onClick={() => setArtisticStyle("crystal")}
               >
                 Crystal
+              </button>
+
+              <button
+                className={`style-option ${
+                  artisticStyle === "galaxy" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("galaxy")}
+              >
+                Galaxy
               </button>
             </div>
           )}
