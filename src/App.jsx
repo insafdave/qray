@@ -603,6 +603,64 @@ function App() {
           </>
         )}
 
+        {artisticStyle === "spark" && (
+          <>
+            {/* Spark pattern */}
+            {Array.from(data).map((cell, index) => {
+              if (!cell || reservedBit[index]) return null;
+
+              const row = Math.floor(index / size);
+              const col = index % size;
+
+              const point = getPoint(row, col);
+
+              const sparkSize = 4.2 + artisticStrength * 2.2;
+
+              const rotation = ((row * 37 + col * 53) % 180) - 90;
+
+              const opacity =
+                0.45 +
+                artisticStrength * (0.35 + ((row * 13 + col * 17) % 20) / 100);
+
+              return (
+                <g
+                  key={`spark-${index}`}
+                  transform={`
+            translate(${point.x} ${point.y})
+            rotate(${rotation})
+          `}
+                >
+                  {/* Main spark */}
+                  <path
+                    d={`
+                      M 0 ${-sparkSize}
+                      L ${sparkSize * 0.18} ${-sparkSize * 0.18}
+                      L ${sparkSize} 0
+                      L ${sparkSize * 0.18} ${sparkSize * 0.18}
+                      L 0 ${sparkSize}
+                      L ${-sparkSize * 0.18} ${sparkSize * 0.18}
+                      L ${-sparkSize} 0
+                      L ${-sparkSize * 0.18} ${-sparkSize * 0.18}
+                      Z
+                    `}
+                    fill="#4f8a5f"
+                    opacity={opacity}
+                  />
+
+                  {/* Spark center */}
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={1 + artisticStrength * 0.45}
+                    fill="#16372d"
+                    opacity={0.8}
+                  />
+                </g>
+              );
+            })}
+          </>
+        )}
+
         {!isBloom && artisticStyle !== "leaf" && !isFlow && (
           <>
             {/* Organic branches */}
@@ -902,6 +960,15 @@ function App() {
                 onClick={() => setArtisticStyle("flow")}
               >
                 Flow
+              </button>
+
+              <button
+                className={`style-option ${
+                  artisticStyle === "spark" ? "active" : ""
+                }`}
+                onClick={() => setArtisticStyle("spark")}
+              >
+                Spark
               </button>
             </div>
           )}
