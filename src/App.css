@@ -982,3 +982,13 @@
   height: 65px !important;
   flex-shrink: 0;
 }
+
+@media (max-width: 600px) {
+  .style-switch {
+    flex-wrap: wrap;
+  }
+
+  .style-option {
+    flex: 0 0 calc(50% - 3px);
+  }
+}
