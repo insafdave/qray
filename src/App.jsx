@@ -1349,9 +1349,13 @@ function App() {
           <h2>Create QR Codes That Match Your Style</h2>
 
           <p>
-            QRay is a free online QR code generator that lets you turn web links
-            into QR codes. Choose Classic Mode for a traditional QR code or
-            Artistic Mode to explore creative designs.
+            QRay is a free online QR code generator that helps you create QR
+            codes for website links. Choose Classic Mode for a traditional QR
+            code or Artistic Mode to explore creative QR designs in seven
+            styles: Tree, Bloom, Leaf, Flow, Spark, Crystal, and Galaxy.
+            Customize your QR code color, adjust the balance between beauty and
+            reliability, preview your design in real-world settings, and
+            download it as a PNG image.
           </p>
 
           <h3>How to Create a QR Code</h3>
