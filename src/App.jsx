@@ -1365,8 +1365,8 @@ function App() {
 
           <p>
             QRay helps you create QR codes for websites, business cards,
-            posters, and more. For the best experience, Create stunning QR codes
-            that bring your links to life.
+            posters, and more. Customize your design and download your QR code
+            for easy sharing.
           </p>
         </div>
       </section>
