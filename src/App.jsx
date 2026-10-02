@@ -1028,7 +1028,7 @@ function App() {
         </div>
 
         <a className="nav-link" href="#about">
-          How it works
+          About QRay
         </a>
       </nav>
 
