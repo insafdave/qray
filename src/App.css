@@ -1006,38 +1006,44 @@
   }
 }
 
-.smart-beauty-button {
-  width: 100%;
-  padding: 13px 18px;
-  margin-top: 12px;
+/* QR Color Picker */
+.color-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 14px 16px;
+  background: #f5f8f5;
+  border: 1px solid #e0e9e1;
+  border-radius: 14px;
+}
 
-  border: none;
-  border-radius: 12px;
-
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  color: white;
-
-  font-size: 15px;
+.color-control span {
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.2px;
+  color: #244b35;
+}
 
+.color-control input[type="color"] {
+  width: 46px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid #d5e1d7;
+  border-radius: 10px;
+  background: #ffffff;
   cursor: pointer;
-
-  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.22);
-
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
-.smart-beauty-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 9px 24px rgba(34, 197, 94, 0.3);
-  filter: brightness(1.04);
+.color-control input[type="color"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 10px rgba(49, 93, 67, 0.15);
 }
 
-.smart-beauty-button:active {
-  transform: translateY(0);
-  box-shadow: 0 5px 14px rgba(34, 197, 94, 0.22);
+.color-control input[type="color"]:focus-visible {
+  outline: 2px solid #315d43;
+  outline-offset: 3px;
 }
