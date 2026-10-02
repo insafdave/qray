@@ -12,6 +12,7 @@ function App() {
   const [beautyLevel, setBeautyLevel] = useState(35);
   const [qrMode, setQrMode] = useState("classic");
   const [artisticStyle, setArtisticStyle] = useState("tree");
+  const [qrColor, setQrColor] = useState("#315d43");
   const [safeBeautyLevel, setSafeBeautyLevel] = useState(null);
 
   const artisticQrRef = useRef(null);
@@ -23,7 +24,13 @@ function App() {
     return new Promise((resolve) => {
       try {
         const serializer = new XMLSerializer();
-        const svgString = serializer.serializeToString(svg);
+        const svgClone = svg.cloneNode(true);
+        const viewBox = svg.viewBox.baseVal;
+
+        svgClone.setAttribute("width", String(viewBox.width));
+        svgClone.setAttribute("height", String(viewBox.height));
+
+        const svgString = serializer.serializeToString(svgClone);
 
         const svgBlob = new Blob([svgString], {
           type: "image/svg+xml;charset=utf-8",
@@ -170,82 +177,11 @@ function App() {
     }
   };
 
-  const applySmartBeauty = () => {
-    const smartLevel = getSmartBeautyLevel();
-    const smartStyle = getSmartStyle();
-
-    setBeautyLevel(smartLevel);
-    setArtisticStyle(smartStyle);
-  };
-
-  const getQrProfile = () => {
-    let darkModules = 0;
-    let totalModules = 0;
-
-    Array.from(qrMatrix.modules.data).forEach((cell, index) => {
-      if (qrMatrix.modules.reservedBit[index]) return;
-
-      totalModules += 1;
-
-      if (cell) {
-        darkModules += 1;
-      }
-    });
-
-    const density = totalModules > 0 ? darkModules / totalModules : 0;
-
-    return {
-      size: qrMatrix.modules.size,
-      density,
-      darkModules,
-      totalModules,
-    };
-  };
-
-  const getQrComplexity = () => {
-    const profile = getQrProfile();
-
-    if (profile.size >= 41 || profile.density >= 0.55) {
-      return "high";
-    }
-
-    if (profile.size >= 29 || profile.density >= 0.45) {
-      return "medium";
-    }
-
-    return "low";
-  };
-
-  const getSmartBeautyLevel = () => {
-    const complexity = getQrComplexity();
-
-    if (complexity === "high") {
-      return 35;
-    }
-
-    if (complexity === "medium") {
-      return 55;
-    }
-
-    return 75;
-  };
-
-  const getSmartStyle = () => {
-    const complexity = getQrComplexity();
-
-    if (complexity === "high") {
-      return "leaf";
-    }
-
-    if (complexity === "medium") {
-      return "flow";
-    }
-
-    return "bloom";
-  };
-
   const generateQRCode = async () => {
     const value = url.trim();
+
+    setQrCode("");
+    setQrMatrix(null);
 
     if (!value) {
       setUrlError("Please enter a URL.");
@@ -353,6 +289,7 @@ function App() {
     const artisticStrength = level / 100;
     const isBloom = artisticStyle === "bloom";
     const isFlow = artisticStyle === "flow";
+    const mainColor = qrColor;
 
     const moduleSize = 10;
     const padding = 40;
@@ -388,7 +325,7 @@ function App() {
                 y={padding + row * moduleSize}
                 width={moduleSize}
                 height={moduleSize}
-                fill="#16372d"
+                fill={qrColor}
               />
             );
           })}
@@ -442,14 +379,14 @@ function App() {
             {/* Bloom flowers */}
             <defs>
               <radialGradient id="bloomPetalGradient">
-                <stop offset="0%" stopColor="#8fbd9a" />
-                <stop offset="65%" stopColor="#5f9b70" />
-                <stop offset="100%" stopColor="#3f7652" />
+                <stop offset="0%" stopColor={qrColor} />
+                <stop offset="65%" stopColor={qrColor} />
+                <stop offset="100%" stopColor={qrColor} />
               </radialGradient>
 
               <radialGradient id="bloomCenterGradient">
-                <stop offset="0%" stopColor="#6fa47c" />
-                <stop offset="100%" stopColor="#315d43" />
+                <stop offset="0%" stopColor={qrColor} />
+                <stop offset="100%" stopColor={qrColor} />
               </radialGradient>
             </defs>
 
@@ -533,7 +470,7 @@ function App() {
                     cx="0"
                     cy="0"
                     r={0.75 + artisticStrength * 0.35}
-                    fill="#b5d1ba"
+                    fill={qrColor}
                     opacity="0.9"
                   />
                 </g>
@@ -586,7 +523,7 @@ function App() {
                 0 0
               Z
             `}
-                    fill="#4f8a5f"
+                    fill={qrColor}
                     opacity={0.65 + artisticStrength * 0.3}
                   />
 
@@ -599,7 +536,7 @@ function App() {
                 0 ${-leafLength * 0.9}
             `}
                     fill="none"
-                    stroke="#315d43"
+                    stroke={qrColor}
                     strokeWidth={0.7 + artisticStrength * 0.35}
                     strokeLinecap="round"
                     opacity={0.65 + artisticStrength * 0.25}
@@ -641,7 +578,7 @@ function App() {
                       ${next.x} ${next.y + wave}
                     `}
                     fill="none"
-                    stroke="#4f8a5f"
+                    stroke={qrColor}
                     strokeWidth={3.4 + strength * 1.4}
                     strokeLinecap="round"
                     opacity={0.65 + strength * 0.25}
@@ -664,7 +601,7 @@ function App() {
                       ${next.x + wave} ${next.y}
                     `}
                     fill="none"
-                    stroke="#315d43"
+                    stroke={qrColor}
                     strokeWidth={3.4 + strength * 1.4}
                     strokeLinecap="round"
                     opacity={0.65 + strength * 0.25}
@@ -717,7 +654,7 @@ function App() {
                       L ${-sparkSize * 0.18} ${-sparkSize * 0.18}
                       Z
                     `}
-                    fill="#4f8a5f"
+                    fill={qrColor}
                     opacity={opacity}
                   />
 
@@ -726,7 +663,7 @@ function App() {
                     cx="0"
                     cy="0"
                     r={1 + artisticStrength * 0.45}
-                    fill="#16372d"
+                    fill={qrColor}
                     opacity={0.8}
                   />
                 </g>
@@ -770,7 +707,7 @@ function App() {
                       L ${-crystalSize * 0.72} ${-crystalSize * 0.35}
                       Z
                     `}
-                    fill="#5f9b70"
+                    fill={qrColor}
                     opacity={opacity}
                   />
 
@@ -781,7 +718,7 @@ function App() {
               L ${crystalSize * 0.7} ${-crystalSize * 0.25}
               Z
             `}
-                    fill="#b5d1ba"
+                    fill={qrColor}
                     opacity={0.7 + artisticStrength * 0.2}
                   />
 
@@ -792,7 +729,7 @@ function App() {
               L 0 ${crystalSize}
               Z
             `}
-                    fill="#3f7652"
+                    fill={qrColor}
                     opacity={0.45 + artisticStrength * 0.25}
                   />
                 </g>
@@ -847,7 +784,7 @@ function App() {
                       L ${-starSize * 0.35} ${-starSize * 0.35}
                       Z
                     `}
-                    fill="#6fa47c"
+                    fill={qrColor}
                     opacity={starOpacity}
                   />
 
@@ -855,7 +792,7 @@ function App() {
                     cx="0"
                     cy="0"
                     r={starSize * 1.5}
-                    fill="#8fbd9a"
+                    fill={qrColor}
                     opacity={0.08 + artisticStrength * 0.12}
                   />
 
@@ -868,7 +805,7 @@ function App() {
               M ${-orbitSize} 0
               L ${orbitSize} 0
             `}
-                    stroke="#8fbd9a"
+                    stroke={qrColor}
                     strokeWidth={0.45 + artisticStrength * 0.35}
                     strokeLinecap="round"
                     opacity={0.12 + artisticStrength * 0.25}
@@ -879,7 +816,7 @@ function App() {
                     cx={orbitSize * 0.85}
                     cy={orbitSize * 0.35}
                     r={0.65 + artisticStrength * 0.45}
-                    fill="#b5d1ba"
+                    fill={qrColor}
                     opacity={0.35 + artisticStrength * 0.35}
                   />
                 </g>
@@ -913,7 +850,6 @@ function App() {
               // Right branch
               if (isArtisticDark(row, col + 1)) {
                 const next = getPoint(row, col + 1);
-                const midX = (current.x + next.x) / 2;
 
                 paths.push(
                   <path
@@ -925,7 +861,7 @@ function App() {
                   ${next.x} ${next.y}
                 `}
                     fill="none"
-                    stroke="#315d43"
+                    stroke={qrColor}
                     strokeWidth={branchWidth}
                     strokeLinecap="round"
                     opacity={artisticStrength}
@@ -936,7 +872,6 @@ function App() {
               // Down branch
               if (isArtisticDark(row + 1, col)) {
                 const next = getPoint(row + 1, col);
-                const midY = (current.y + next.y) / 2;
 
                 paths.push(
                   <path
@@ -948,7 +883,7 @@ function App() {
                   ${next.x} ${next.y}
               `}
                     fill="none"
-                    stroke="#315d43"
+                    stroke={qrColor}
                     strokeWidth={branchWidth}
                     strokeLinecap="round"
                     opacity={artisticStrength}
@@ -980,7 +915,7 @@ function App() {
                     cx={point.x}
                     cy={point.y}
                     r={leafRadius}
-                    fill="#315d43"
+                    fill={mainColor}
                   />
                 );
               }
@@ -998,7 +933,7 @@ function App() {
                   ${point.x - 3} ${point.y}
                 Z
               `}
-                    fill="#4f8a5f"
+                    fill={mainColor}
                     opacity={0.35 + artisticStrength * 0.65}
                     transform={`
                   translate(${point.x} ${point.y})
@@ -1017,7 +952,7 @@ function App() {
                   cx={point.x}
                   cy={point.y}
                   r={2.2 + artisticStrength * 0.8}
-                  fill="#315d43"
+                  fill={mainColor}
                 />
               );
             })}
@@ -1039,7 +974,7 @@ function App() {
               cx={point.x}
               cy={point.y}
               r={artisticStyle === "galaxy" ? 0.8 : 2.6}
-              fill="#16372d"
+              fill={mainColor}
             />
           );
         })}
@@ -1061,7 +996,7 @@ function App() {
               y={y}
               width={moduleSize}
               height={moduleSize}
-              fill="#16372d"
+              fill={mainColor}
             />
           );
         })}
@@ -1219,13 +1154,16 @@ function App() {
           )}
 
           {qrMode === "artistic" && (
-            <button
-              type="button"
-              className="smart-beauty-button"
-              onClick={applySmartBeauty}
-            >
-              ✨ Make It Beautiful
-            </button>
+            <div className="color-control">
+              <span>QR Color</span>
+
+              <input
+                type="color"
+                value={qrColor}
+                onChange={(event) => setQrColor(event.target.value)}
+                aria-label="QR color"
+              />
+            </div>
           )}
 
           {qrMode === "artistic" && (

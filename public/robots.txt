@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qray.insaf.space/sitemap.xml
