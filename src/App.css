@@ -1047,3 +1047,79 @@
   outline: 2px solid #315d43;
   outline-offset: 3px;
 }
+
+/* ---------- ABOUT QRAY ---------- */
+
+.about-section {
+  width: min(900px, calc(100% - 40px));
+  margin: 40px auto 80px;
+  padding: clamp(28px, 5vw, 56px);
+  box-sizing: border-box;
+
+  background: linear-gradient(145deg, #f5f9f3, #ffffff);
+  border: 1px solid #e0e9df;
+  border-radius: 28px;
+
+  box-shadow: 0 18px 50px rgba(48, 82, 59, 0.06);
+  scroll-margin-top: 24px;
+}
+
+.about-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.about-content h2 {
+  margin: 0 0 20px;
+  color: #16372d;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.about-content h3 {
+  margin: 32px 0 14px;
+  color: #254d38;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.about-content p,
+.about-content li {
+  color: #66786f;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.about-content p {
+  margin: 0 0 18px;
+}
+
+.about-content ol {
+  padding-left: 24px;
+  margin: 0 0 24px;
+}
+
+.about-content li {
+  padding-left: 6px;
+  margin-bottom: 8px;
+}
+
+.about-content li::marker {
+  color: #579064;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .about-section {
+    width: calc(100% - 28px);
+    margin: 24px auto 48px;
+    padding: 28px 22px;
+    border-radius: 22px;
+  }
+
+  .about-content p,
+  .about-content li {
+    font-size: 0.94rem;
+  }
+}

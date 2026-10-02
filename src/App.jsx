@@ -1341,6 +1341,35 @@ function App() {
           </div>
         </div>
       </section>
+
+      <section className="about-section" id="about">
+        <div className="about-content">
+          <span className="eyebrow">ABOUT QRAY</span>
+
+          <h2>Create QR Codes That Match Your Style</h2>
+
+          <p>
+            QRay is a free online QR code generator that lets you turn web links
+            into QR codes. Choose Classic Mode for a traditional QR code or
+            Artistic Mode to explore creative designs.
+          </p>
+
+          <h3>How to Create a QR Code</h3>
+
+          <ol>
+            <li>Enter your website URL.</li>
+            <li>Choose Classic Mode or Artistic Mode.</li>
+            <li>Customize your QR code using the available options.</li>
+            <li>Download your QR code and start sharing it.</li>
+          </ol>
+
+          <p>
+            QRay helps you create QR codes for websites, business cards,
+            posters, and more. For the best experience, Create stunning QR codes
+            that bring your links to life.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
